@@ -136,7 +136,7 @@ end
 
 if makefolder and isfolder and writefile and isfile then
 	pcall(function() -- good executor trust
-		local assets = "https://raw.githubusercontent.com/infyiff/backup/refs/heads/main/"
+		local assets = "https://raw.githubusercontent.com/rex-rbx/IYReborn/refs/heads/main/assets"
 		for _, folder in {"infiniteyield", "infiniteyield/assets"} do
 			if not isfolder(folder) then
 				makefolder(folder)
