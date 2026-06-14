@@ -737,7 +737,7 @@ Credits.Position = UDim2.new(0, 0, 0.9, 30)
 Credits.Size = UDim2.new(0, 250, 0, 20)
 Credits.Font = Enum.Font.SourceSansLight
 Credits.FontSize = Enum.FontSize.Size14
-Credits.Text = "Edge // Zwolf // Moon // Toon // Peyton // ATP"
+Credits.Text = "???"
 Credits.TextColor3 = Color3.new(1, 1, 1)
 Credits.ZIndex = 10
 
@@ -2901,7 +2901,6 @@ defaultsettings = {
 	StayOpen = false;
 	guiScale = defaultGuiScale;
 	espTransparency = 0.3;
-	keepIY = true;
 	logsEnabled = false;
 	jLogsEnabled = false;
 	aliases = {};
@@ -2923,7 +2922,6 @@ useFactorySettings = function()
 	prefix = ';'
 	StayOpen = false
 	guiScale = defaultGuiScale
-	KeepInfYield = true
 	espTransparency = 0.3
 	logsEnabled = false
 	jLogsEnabled = false
@@ -3030,7 +3028,6 @@ function saves()
 					if vtype(json.prefix, "string") then prefix = json.prefix else prefix = ';' end
 					if vtype(json.StayOpen, "boolean") then StayOpen = json.StayOpen else StayOpen = false end
 					if vtype(json.guiScale, "number") then guiScale = json.guiScale else guiScale = defaultGuiScale end
-					if vtype(json.keepIY, "boolean") then KeepInfYield = json.keepIY else KeepInfYield = true end
 					if vtype(json.espTransparency, "number") then espTransparency = json.espTransparency else espTransparency = 0.3 end
 					if vtype(json.logsEnabled, "boolean") then logsEnabled = json.logsEnabled else logsEnabled = false end
 					if vtype(json.jLogsEnabled, "boolean") then jLogsEnabled = json.jLogsEnabled else jLogsEnabled = false end
@@ -3100,7 +3097,6 @@ function updatesaves()
 			prefix = prefix;
 			StayOpen = StayOpen;
 			guiScale = guiScale;
-			keepIY = KeepInfYield;
 			espTransparency = espTransparency;
 			logsEnabled = logsEnabled;
 			jLogsEnabled = jLogsEnabled;
@@ -4464,9 +4460,6 @@ CMDs[#CMDs + 1] = {NAME = 'guidelete', DESC = 'Enables backspace to delete GUI'}
 CMDs[#CMDs + 1] = {NAME = 'unguidelete / noguidelete', DESC = 'Disables guidelete'}
 CMDs[#CMDs + 1] = {NAME = 'hideiy', DESC = 'Hides the main IY GUI'}
 CMDs[#CMDs + 1] = {NAME = 'showiy / unhideiy', DESC = 'Shows IY again'}
-CMDs[#CMDs + 1] = {NAME = 'keepiy', DESC = 'Auto execute IY when you teleport through servers'}
-CMDs[#CMDs + 1] = {NAME = 'unkeepiy', DESC = 'Disable keepiy'}
-CMDs[#CMDs + 1] = {NAME = 'togglekeepiy', DESC = 'Toggles keepiy'}
 CMDs[#CMDs + 1] = {NAME = 'removeads / adblock', DESC = 'Automatically removes ad billboards'}
 CMDs[#CMDs + 1] = {NAME = 'savegame / saveplace', DESC = 'Uses saveinstance to save the game'}
 CMDs[#CMDs + 1] = {NAME = 'clearerror', DESC = 'Clears the annoying box and blur when a game kicks you'}
@@ -6446,14 +6439,6 @@ Close_4.MouseButton1Click:Connect(function()
 	PluginsFrame:TweenPosition(UDim2.new(0, 0, 0, 175), "InOut", "Quart", 0.5, true, nil)
 end)
 
-local TeleportCheck = false
-Players.LocalPlayer.OnTeleport:Connect(function(State)
-	if KeepInfYield and (not TeleportCheck) and queueteleport then
-		TeleportCheck = true
-		queueteleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()")
-	end
-end)
-
 addcmd('addalias',{},function(args, speaker)
 	if #args < 2 then return end
 	local cmd = string.lower(args[1])
@@ -6493,35 +6478,6 @@ addcmd('clraliases',{},function(args, speaker)
 	notify('Aliases Modified','Removed all aliases')
 	updatesaves()
 	refreshaliases()
-end)
-
-addcmd('keepiy', {}, function(args, speaker)
-	if queueteleport then
-		KeepInfYield = true
-		notify('KeepIY','Infinite Yield Reborn will now run after you teleport')
-		updatesaves()
-	else
-		notify('Incompatible Exploit','Your exploit does not support this command (missing queue_on_teleport)')
-	end
-end)
-
-addcmd('unkeepiy', {}, function(args, speaker)
-	if queueteleport then
-		KeepInfYield = false
-		notify('KeepIY','Infinite Yield Reborn will no longer run after you teleport')
-		updatesaves()
-	else
-		notify('Incompatible Exploit','Your exploit does not support this command (missing queue_on_teleport)')
-	end
-end)
-
-addcmd('togglekeepiy', {}, function(args, speaker)
-	if queueteleport then
-		KeepInfYield = not KeepInfYield
-		updatesaves()
-	else
-		notify('Incompatible Exploit','Your exploit does not support this command (missing queue_on_teleport)')
-	end
 end)
 
 local canOpenServerinfo = true
