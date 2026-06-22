@@ -103,7 +103,7 @@ isLegacyChat = TextChatService.ChatVersion == Enum.ChatVersion.LegacyChatService
     return gethidden(workspace, "RejectCharacterDeletions") ~= Enum.RejectCharacterDeletions.Disabled
 end)) or false]]
 pcall(function()
-	local AdonisBypass = loadstring(game:HttpGet("https://raw.githubusercontent.com/notpoiu/cobalt/refs/heads/main/Src/Utils/Anticheats/impl/Adonis.luau"))()
+	local AdonisBypass = loadstring(game:HttpGet("https://github.com/rex-rbx/IYReborn/raw/refs/heads/main/Adonis.luau"))()
 	if AdonisBypass.Detect() then AdonisBypass.Bypass() end
 end)
 -- xylex & europa
