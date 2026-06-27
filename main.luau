@@ -98,6 +98,10 @@ pcall(function()
 	local AdonisBypass = loadstring(game:HttpGet("https://github.com/rex-rbx/IYReborn/raw/refs/heads/main/Adonis.luau"))()
 	if AdonisBypass.Detect() then AdonisBypass.Bypass() end
 end)
+local b64
+pcall(function()
+	b64 = loadstring(game:HttpGet("https://github.com/rex-rbx/Base64InLuau/blob/main/b64.luau"))()
+end)
 local iyassets = {
 	["infiniteyield/assets/bindsandplugins.png"] = "rbxassetid://5147695474",
 	["infiniteyield/assets/close.png"] = "rbxassetid://5054663650",
@@ -3998,6 +4002,7 @@ function autoComplete(str,curText)
 	Cmdbar.CursorPosition = #Cmdbar.Text+1--1020
 end
 CMDs = {}
+CMDs[#CMDs + 1] = {NAME = "decompiler", DESC = "Loads lua.expert"}
 CMDs[#CMDs + 1] = {NAME = "blockall / blockallinserver", DESC = "Blocks everyone in your server."}
 CMDs[#CMDs + 1] = {NAME = "blocknf / blocknonfriends", DESC = "Blocks everyone in your server who isnt your friend."}
 CMDs[#CMDs + 1] = {NAME = 'guiscale [number]', DESC = 'Changes the size of the gui. [number] accepts decimals and whole numbers. Min is 0.4 and Max is 2'}
@@ -5938,6 +5943,37 @@ addcmd('clraliases',{},function(args, speaker)
 	notify('Aliases Modified','Removed all aliases')
 	updatesaves()
 	refreshaliases()
+end)
+addcmd('decompiler', {'luaexpert', 'betterdecompiler'}, function()
+	local last = 0
+	getgenv().decompile = function(script: Instance): string?
+		local success, bytecode = xRenv.pcall(Xeno.getscriptbytecode, script)
+		if #bytecode <= 1 then
+			return "-- " .. tostring(script:GetFullName()) .. " contains empty bytecode"
+		end
+		if (not success) then
+			return `-- Failed to get script bytecode, error:\n\n--[[\n{bytecode}\n--] ]`
+		end
+		local elapsed = os.clock() - last
+		if elapsed < 0.12 then
+			task.wait(0.12 - elapsed)
+		end
+		local res = httprequest({
+			Url = "https://api.lua.expert/decompile",
+			Method = "POST",
+			Headers = {
+				["content-type"] = "application/json"
+			},
+			Body = HttpService:JSONEncode({
+				script = base64encode or base64_encode or (base64 and base64.encode) or (crypt and crypt.base64 and crypt.base64.encode) or (crypt and crypt.base64encode) or (crypt and crypt.base64_encode) or b64.encode(bytecode)
+			})
+		})
+		last = os.clock()
+		if not res or res.StatusCode ~= 200 then
+			return "-- api request error\n--[[\n" .. (res and res.Body or "no response") .. "\n--]]"
+		end
+		return res.Body
+	end
 end)
 local canOpenServerinfo = true
 addcmd('serverinfo',{'info','sinfo'},function(args, speaker)
@@ -7951,9 +7987,10 @@ addcmd("antiafk", {"antiidle"}, function(args, speaker)
 			end
 		end
 	else
+		local VirtualUser = cloneref(Services.VirtualUser)
 		speaker.Idled:Connect(function()
-			Services.VirtualUser:CaptureController()
-			Services.VirtualUser:ClickButton2(Vector2.new())
+			VirtualUser:CaptureController()
+			VirtualUser:ClickButton2(Vector2.new())
 		end)
 	end
 	if not (args[1] and tostring(args[1]) == "nonotify") then notify("Anti Idle", "Anti idle is enabled") end
